@@ -1,26 +1,37 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { NewTodoForm } from "./NewTodoForm"
+import { TodoList } from "./TodoList"
 import "./styles.css"
 
 export default function App() {
   //setNewItem is a fucntion to update the state of newItem
+  const [todos, setTodos] = useState(()=> {
+    const localValue = localStorage.getItem("ITEMS")
+    if (localValue == null) return []
 
-  const [todos, setTodos] = useState([])
+    return JSON.parse(localValue)
+  })
+
+  useEffect(() => {
+    localStorage.setItem("ITEMS", JSON.stringify(todos))
+  }, [todos])
 
   function addTodo(title) {
-    setTodos((currentTodos) => {
+    setTodos(currentTodos => {
       return [
         ...currentTodos,
-        { id: crypto.randomUUID(), title: newItem, completed: false},
+        { id: crypto.randomUUID(), title, completed: false},
       ]
     })
   }
+
   function toggleTodo(id, completed) {
     setTodos(currentTodos => {
       return currentTodos.map(todo => {
         if (todo.id === id) {
           return { ...todo, completed }
         }
+
         return todo
       })
     })
@@ -31,33 +42,15 @@ export default function App() {
       return currentTodos.filter(todo => todo.id !== id)
     })
   }
-  console.log(todos)
+
   return (
-  <>
-    <NewTodoForm />
-    <h1 className="header">Todo List</h1>
-    <ul className="list">
-    {/* //return todo array */}
-    {todos.length === 0 && "Nothing to do. :("}
-    {todos.map(todo => {
-      return (
-        <li key={todo.id}>
-        <label>
-          <input 
-            type="checkbox" 
-            checked={todo.completed}
-            onChange={e => toggleTodo(todo.id, e.target.checked)}
-          />
-          {todo.title}
-        </label>
-        <button 
-          onClick={() => deleteTodo(todo.id)} 
-          className="btn btn-danger">Delete</button>
-      </li>
-      )
-    })} 
-    </ul>
-  </>
+    <>
+      {/* onsubmit is the props parameter */}
+      <NewTodoForm onSubmit={addTodo} />  
+      <h1 className="header">Todo List</h1>
+      <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo}/>
+      {/* <DeletedList /> */}
+    </>
   )
 
 }
