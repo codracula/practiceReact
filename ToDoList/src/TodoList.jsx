@@ -14,7 +14,7 @@ export function TodoList({ todos, toggleTodo, deleteTodo }) {
                         deleteTodo={deleteTodo}
                     />
                 )
-            })} 
+            })}
         </ul>
     )
 }
