@@ -9,15 +9,18 @@ export default function App() {
   //setTodos is a function to update the state of newItem
   const [todos, setTodos] = useState(()=> {
     const localValue = localStorage.getItem("ITEMS")
-    // const localDeleteValue = localStorage.getItem("DELETEITEMS")
     if (localValue == null) return []
     return JSON.parse(localValue)
   })
+
   const [delList, setDelList] = useState(()=> {
-    // const localValue = localStorage.getItem("ITEMS")
     const localDeleteValue = localStorage.getItem("DELETEITEMS")
     if (localDeleteValue == null) return []
-    return JSON.parse(localDeleteValue)
+    try {
+      return JSON.parse(localDeleteValue);
+    } catch (e) {
+      return [];
+    }
   })
 
   useEffect(() => {
@@ -48,36 +51,38 @@ export default function App() {
     })
   }
 
+  function addDelete(id) {
+    setTodos(currentTodos => {
+      return [
+        ...currentTodos,
+        { id, title, completed},
+      ]
+    })
+  }
+
   function deleteTodo(id) {
     setTodos(currentTodos => {
-      // const localDeleteValue = localStorage.getItem("DELETEITEMS")
-      // if (localDeleteValue == null) return []
-      // JSON.parse(localStorage.getItem("DELETEITEMS"))
-      // console.log()
-      const retrieveValue = currentTodos.filter(todo => todo.id == id)
-      console.log("filter delete: ", retrieveValue)
-
-      localStorage.setItem("DELETEITEMS", retrieveValue)
-      addDelete(id)
+      const temp = localStorage.getItem("ITEMS")
+      const item = JSON.parse(temp).find(tempItem => tempItem.id == id)
+      
+      console.log("item: ", item)
+      localStorage.setItem("DELETEITEMS", item)
+      console.log((delList))
       return currentTodos.filter(todo => todo.id !== id)
-
     })
   }
 
   function permDelete(id) {
-    setTodos(currentTodos => {
-      return currentTodos.filter(todo => todo.id !== id)
+    setDelList(currentTodos => {
+      return currentTodos.filter(delList => delList.id !== id)
     })
   }
 
-  function addDelete(id) {
-    setDelList(currentTodos => {
-      return [
-        ...currentTodos,
-        {id},
-      ]
-    })
-  }
+  // function addDelete(id) {
+  //   setDelList(currentTodos => {
+  //     return currentTodos.filter(todo => todo.id == id)
+  //   })
+  // }
   return (
     <>
       {/* onsubmit is the props parameter */}
@@ -86,7 +91,7 @@ export default function App() {
       <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo}/>
       <h1 className='header'>Deleted</h1>
       
-      <DeletedList todos={delList} toggleTodo={toggleTodo} deleteTodo={permDelete}/>
+      <DeletedList todos={delList}  toggleTodo={toggleTodo} deleteTodo={permDelete}/>
     </>
   )
 
