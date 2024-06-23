@@ -19,6 +19,7 @@ export default function App() {
     try {
       return JSON.parse(localDeleteValue);
     } catch (e) {
+      console.log("Error parsing JSON: ", e);
       return [];
     }
   })
@@ -52,22 +53,36 @@ export default function App() {
   }
 
   function addDelete(id) {
-    setTodos(currentTodos => {
-      return [
-        ...currentTodos,
-        { id, title, completed},
-      ]
+    setDelList(currentTodos => {
+      return currentTodos.map(todo => { todo.id == id})
     })
   }
 
+  const addToDelList = (item) => {
+    const itemExists = delList.some(unit => unit.id == item.id);
+    if (itemExists) {
+      return;
+    }
+    delList.push(item)
+    // setDelList(currentDelList => [... currentDelList, item]);
+
+  }
   function deleteTodo(id) {
     setTodos(currentTodos => {
       const temp = localStorage.getItem("ITEMS")
       const item = JSON.parse(temp).find(tempItem => tempItem.id == id)
       
       console.log("item: ", item)
-      localStorage.setItem("DELETEITEMS", item)
-      console.log((delList))
+      // console.log("localDeleteValue: ", localDeleteValue)
+      console.log("delList before push: ", delList)
+      addToDelList(item)
+      // delList.push(item)
+      // addDelete(id)
+      console.log("delList: ", delList)
+      // const deleteArray = getDeleteItems()
+      // deleteArray.push(item)
+      // setDeleteItems(delList)
+      // localStorage.setItem("DELETEITEMS", item)
       return currentTodos.filter(todo => todo.id !== id)
     })
   }
@@ -78,20 +93,30 @@ export default function App() {
     })
   }
 
-  // function addDelete(id) {
-  //   setDelList(currentTodos => {
-  //     return currentTodos.filter(todo => todo.id == id)
-  //   })
-  // }
+  const getDeleteItems = () => {
+    const localDeleteValue = localStorage.getItem("DELETEITEMS")
+    if (localDeleteValue == null) return []
+    try {
+      return JSON.parse(localDeleteValue);
+    } catch (e) {
+      console.log("Error parsing JSON: ", e);
+      return [];
+    }
+  }
+
+  const setDeleteItems = (items) =>  {
+    localStorage.setItem("DELETEITEMS", JSON.stringify(items))
+  };
+
   return (
     <>
       {/* onsubmit is the props parameter */}
       <NewTodoForm onSubmit={addTodo} />  
       <h1 className="header">Todo List</h1>
       <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo}/>
-      <h1 className='header'>Deleted</h1>
+      <h1 className='header'>Completed Log</h1>
       
-      <DeletedList todos={delList}  toggleTodo={toggleTodo} deleteTodo={permDelete}/>
+      <DeletedList todos={delList} toggleTodo={toggleTodo} deleteTodo={permDelete}/>
     </>
   )
 
