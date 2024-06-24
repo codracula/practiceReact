@@ -10,6 +10,7 @@ export function DeletedList({ todos, toggleTodo, deleteTodo }) {
                         key={todo.id} 
                         toggleTodo={toggleTodo} 
                         deleteTodo={deleteTodo}
+                        label="Remove"
                     />
                 )
             })} 

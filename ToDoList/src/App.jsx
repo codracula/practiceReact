@@ -71,18 +71,7 @@ export default function App() {
     setTodos(currentTodos => {
       const temp = localStorage.getItem("ITEMS")
       const item = JSON.parse(temp).find(tempItem => tempItem.id == id)
-      
-      console.log("item: ", item)
-      // console.log("localDeleteValue: ", localDeleteValue)
-      console.log("delList before push: ", delList)
       addToDelList(item)
-      // delList.push(item)
-      // addDelete(id)
-      console.log("delList: ", delList)
-      // const deleteArray = getDeleteItems()
-      // deleteArray.push(item)
-      // setDeleteItems(delList)
-      // localStorage.setItem("DELETEITEMS", item)
       return currentTodos.filter(todo => todo.id !== id)
     })
   }
@@ -93,6 +82,7 @@ export default function App() {
     })
   }
 
+  //refactoring the deleteitem localstorage
   const getDeleteItems = () => {
     const localDeleteValue = localStorage.getItem("DELETEITEMS")
     if (localDeleteValue == null) return []
@@ -114,7 +104,7 @@ export default function App() {
       <NewTodoForm onSubmit={addTodo} />  
       <h1 className="header">Todo List</h1>
       <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo}/>
-      <h1 className='header'>Completed Log</h1>
+      <h1 className='header'>Archived</h1>
       
       <DeletedList todos={delList} toggleTodo={toggleTodo} deleteTodo={permDelete}/>
     </>
